@@ -6,7 +6,13 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "splitwise-clone-889es6g9u-ajay10110s-projects.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
