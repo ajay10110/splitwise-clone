@@ -9,7 +9,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "splitwise-clone-889es6g9u-ajay10110s-projects.vercel.app"
+    "https://vercel.com/ajay10110s-projects/splitwise-clone/Cs1D6LoS4WRXNyDrDLma8MAFteaa"
   ],
   credentials: true
 }));
