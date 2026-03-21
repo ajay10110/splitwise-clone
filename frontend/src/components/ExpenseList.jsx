@@ -34,36 +34,34 @@ export default function ExpenseList({ expenses, friends, onDelete, currentUser }
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4">
-                  <div className="text-right flex flex-col items-end">
+                <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                  <div className="text-right flex flex-col items-end min-w-[80px]">
                      {/* Show user's share */}
                      {(() => {
                         const userPart = expense.participants.find(p => p.friendId === 'userId' || p.friendId === currentUser.id);
                         if (!userPart && expense.paidBy !== 'userId') {
-                          return <span className="text-gray-500 text-sm">Not involved</span>;
+                          return <span className="text-gray-500 text-[10px] sm:text-xs">Not involved</span>;
                         }
                         if (expense.paidBy === 'userId') {
-                          // User paid. Calculate how much others owe user for this expense
                           const othersOwe = expense.participants.filter(p => p.friendId !== 'userId').reduce((sum, p) => sum + p.amountOwed, 0);
                           return (
                             <>
-                              <span className="text-xs text-gray-500 uppercase tracking-wide">You lent</span>
-                              <span className="font-bold text-green-600">${othersOwe.toFixed(2)}</span>
+                              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide">You lent</span>
+                              <span className="font-extrabold text-sm sm:text-lg text-green-600">${othersOwe.toFixed(2)}</span>
                             </>
                           );
                         } else {
-                          // Someone else paid, user is a participant
                           return (
                             <>
-                              <span className="text-xs text-gray-500 uppercase tracking-wide">You borrowed</span>
-                              <span className="font-bold text-red-600">${userPart ? userPart.amountOwed.toFixed(2) : '0.00'}</span>
+                              <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide">You borrowed</span>
+                              <span className="font-extrabold text-sm sm:text-lg text-red-600">${userPart ? userPart.amountOwed.toFixed(2) : '0.00'}</span>
                             </>
                           );
                         }
                      })()}
                   </div>
-                  <button onClick={() => onDelete(expense._id)} className="p-2 text-gray-400 hover:text-red-500 transition ml-2">
-                    <Trash2 className="w-5 h-5" />
+                  <button onClick={() => onDelete(expense._id)} className="p-1.5 sm:p-2 text-gray-400 hover:text-red-500 transition">
+                    <Trash2 className="w-4 h-4 sm:w-5 h-5" />
                   </button>
                 </div>
               </div>

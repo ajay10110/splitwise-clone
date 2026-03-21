@@ -8,7 +8,7 @@ import ExpenseList from '../components/ExpenseList';
 import AddExpenseModal from '../components/AddExpenseModal';
 import SettleUpModal from '../components/SettleUpModal';
 
-import { LogOut, Plus, HandCoins } from 'lucide-react';
+import { LogOut, Plus, HandCoins, Menu, X as CloseIcon } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, logoutUser } = useContext(AuthContext);
@@ -23,6 +23,7 @@ export default function Dashboard() {
   const [settlements, setSettlements] = useState([]);
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
   const [isSettleModalOpen, setSettleModalOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const loadData = async () => {
     try {
@@ -181,10 +182,18 @@ export default function Dashboard() {
       <nav className="bg-white/70 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <span className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-                SplitwiseClone
-              </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(!isSidebarOpen)}
+                className="lg:hidden p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+              >
+                {isSidebarOpen ? <CloseIcon className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+              <div className="flex items-center">
+                <span className="text-xl sm:text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+                  SplitwiseClone
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-600 bg-gray-100/50 px-3 py-1.5 rounded-full border border-gray-200">
@@ -205,8 +214,19 @@ export default function Dashboard() {
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
         
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-30 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar - Trips & Friends */}
-        <aside className="w-full lg:w-80 flex-shrink-0 h-[calc(100vh-8rem)] sticky top-24">
+        <aside className={`
+          fixed inset-y-0 left-0 w-80 bg-white z-40 transform transition-transform duration-300 lg:static lg:block lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24 lg:translate-x-0
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
           <Sidebar 
             friends={activeTrip ? friends.filter(f => activeTrip.members.includes(f._id)) : friends} 
             trips={trips}
@@ -217,7 +237,10 @@ export default function Dashboard() {
             onDeleteTrip={handleDeleteTrip}
             onRemoveTripMember={handleRemoveTripMember}
             activeTrip={activeTrip}
-            setActiveTrip={setActiveTrip}
+            setActiveTrip={(trip) => {
+              setActiveTrip(trip);
+              setSidebarOpen(false); // Close on mobile when selection made
+            }}
           />
         </aside>
 
@@ -225,20 +248,20 @@ export default function Dashboard() {
         <section className="flex-1 space-y-6">
           {/* Top Widget / Summary */}
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="flex flex-1 w-full divide-x divide-gray-100">
-              <div className="px-4 flex-1 text-center">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Total balance</p>
-                <p className={`text-2xl font-black ${netBalance > 0 ? 'text-green-500' : netBalance < 0 ? 'text-red-500' : 'text-gray-800'}`}>
+            <div className="flex flex-1 w-full divide-x divide-gray-100 overflow-x-auto pb-2 sm:pb-0">
+              <div className="px-4 flex-1 text-center min-w-[100px]">
+                <p className="text-[10px] sm:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Total balance</p>
+                <p className={`text-lg sm:text-2xl font-black ${netBalance > 0 ? 'text-green-500' : netBalance < 0 ? 'text-red-500' : 'text-gray-800'}`}>
                   {netBalance > 0 ? '+' : ''}${netBalance.toFixed(2)}
                 </p>
               </div>
-              <div className="px-4 flex-1 text-center">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">You owe</p>
-                <p className="text-2xl font-black text-red-500">${totalOwed.toFixed(2)}</p>
+              <div className="px-4 flex-1 text-center min-w-[100px]">
+                <p className="text-[10px] sm:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">You owe</p>
+                <p className="text-lg sm:text-2xl font-black text-red-500">${totalOwed.toFixed(2)}</p>
               </div>
-              <div className="px-4 flex-1 text-center hidden sm:block">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">You are owed</p>
-                <p className="text-2xl font-black text-green-500">${totalLent.toFixed(2)}</p>
+              <div className="px-4 flex-1 text-center min-w-[100px]">
+                <p className="text-[10px] sm:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">You are owed</p>
+                <p className="text-lg sm:text-2xl font-black text-green-500">${totalLent.toFixed(2)}</p>
               </div>
             </div>
 
